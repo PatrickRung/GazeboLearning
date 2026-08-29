@@ -29,7 +29,11 @@ void SwerveSystem::Configure(const gz::sim::Entity &_entity,
                 gz::sim::EntityComponentManager &_ecm,
                 gz::sim::EventManager &_eventManager)
 {
-  igndbg << "ros_gz_example_gazebo::SwerveSystem::Configure on entity: " << _entity << std::endl;
+  std::cout << "ros_gz_example_gazebo::SwerveSystem::Configure on entity: " << _entity << std::endl;
+
+  // The subscribe function requires a ref to this own object as handle_command is non static
+  // and thus requires to be tied to an object
+  this->node.Subscribe("/Direction", &SwerveSystem::hanlde_command, this);
 }
 
 void SwerveSystem::PreUpdate(const gz::sim::UpdateInfo &_info,
@@ -57,6 +61,10 @@ void SwerveSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
   {
     igndbg << "ros_gz_example_gazebo::SwerveSystem::PostUpdate" << std::endl;
   }
+}
+
+void SwerveSystem::hanlde_command(const gz::msgs::Twist &_msg) {
+  
 }
 
 }  // namespace ros_gz_example_gazebo

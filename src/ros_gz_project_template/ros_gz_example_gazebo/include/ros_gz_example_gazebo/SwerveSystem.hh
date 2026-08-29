@@ -22,6 +22,9 @@
 // All others will depend on what your plugin does.
 #include <gz/sim/EventManager.hh>
 #include <gz/sim/System.hh>
+#include <gz/msgs/twist.pb.h>
+#include <gz/transport/Node.hh>       // For creating gazebo transport sub pub
+
 
 namespace ros_gz_example_gazebo
 {
@@ -72,6 +75,15 @@ namespace ros_gz_example_gazebo
     // simulation.
     public: void PostUpdate(const gz::sim::UpdateInfo &_info,
                 const gz::sim::EntityComponentManager &_ecm) override;
+
+    private:
+      void hanlde_command(const gz::msgs::Twist &_msg);
+
+      // Object that acts as subscriber and publisher for all inter
+      // ROS communication 
+      gz::transport::Node node;
+
+
 
   };
 }
