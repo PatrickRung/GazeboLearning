@@ -1,5 +1,4 @@
 Like the title says this is my attempt of learning gazebo
-
 # Build/ Using
 
 `cd /GazeboLearning`
