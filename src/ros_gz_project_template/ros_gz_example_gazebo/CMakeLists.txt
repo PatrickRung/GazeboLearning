@@ -57,13 +57,26 @@ target_include_directories(
 target_link_libraries(FullSystem PRIVATE
   ignition-gazebo${GZ_SIM_VER}::ignition-gazebo${GZ_SIM_VER})
 
+# Following directives similarly specify another target: 'SwerveSystem'.
+add_library(SwerveSystem
+  SHARED
+  src/SwerveSystem.cc
+)
+
+target_include_directories(
+  SwerveSystem PRIVATE include
+)
+
+target_link_libraries(SwerveSystem PRIVATE
+  ignition-gazebo${GZ_SIM_VER}::ignition-gazebo${GZ_SIM_VER})
+
 
 
 # Following 'install' directive ensures that the compiled libraries
 # of the 'BasicSystem' and 'FullSystem' targets will be copied
 # to the subfolder 'lib/ros_gz_example_gazebo' of the install directory.
 install(
-  TARGETS BasicSystem FullSystem
+  TARGETS BasicSystem FullSystem SwerveSystem
   DESTINATION lib/${PROJECT_NAME}
 )
 
