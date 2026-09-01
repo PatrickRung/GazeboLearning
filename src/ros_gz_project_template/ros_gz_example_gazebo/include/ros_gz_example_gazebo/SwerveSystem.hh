@@ -88,13 +88,12 @@ namespace ros_gz_example_gazebo
       // Object that acts as subscriber and publisher for all inter
       // ROS communication 
       gz::transport::Node node;
-      gz::sim::Entity *leftJoint{nullptr};
-      gz::sim::Entity *rightJoint{nullptr};
 
       // Reference to the current model stored during the config state
       gz::sim::Model model{ignition::gazebo::v6::kNullEntity};
 
-
+      double left_wheel_vel{0};
+      double right_wheel_vel{0};
 
   };
 }

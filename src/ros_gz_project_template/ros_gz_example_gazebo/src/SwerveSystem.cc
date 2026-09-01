@@ -46,26 +46,17 @@ void SwerveSystem::PreUpdate(const gz::sim::UpdateInfo &_info,
     igndbg << "ros_gz_example_gazebo::SwerveSystem::PreUpdate" << std::endl;
   }
 
-  // If joints are not populated attempt to fetch them
-  if (this->leftJoint == nullptr ||
-      this->rightJoint == nullptr)
-  {
-      gz::sim::Entity left_joint = this->model.JointByName(_ecm, "left_wheel_joint");
-      if (left_joint != ignition::gazebo::v6::kNullEntity) {
-        std::cout << "found eventually" << std::endl;
-        _ecm.SetComponentData<components::JointVelocityCmd>(left_joint,
-        {2000});
-      }
-
-      gz::sim::Entity right_joint = this->model.JointByName(_ecm, "right_wheel_joint");
-      if (right_joint != ignition::gazebo::v6::kNullEntity) {
-        std::cout << "found eventually" << std::endl;
-        _ecm.SetComponentData<components::JointVelocityCmd>(right_joint,
-        {2000});
-      }
+  gz::sim::Entity left_joint = this->model.JointByName(_ecm, "left_wheel_joint");
+  if (left_joint != ignition::gazebo::v6::kNullEntity) {
+    _ecm.SetComponentData<components::JointVelocityCmd>(left_joint,
+    {this->left_wheel_vel});
   }
 
-
+  gz::sim::Entity right_joint = this->model.JointByName(_ecm, "right_wheel_joint");
+  if (right_joint != ignition::gazebo::v6::kNullEntity) {
+    _ecm.SetComponentData<components::JointVelocityCmd>(right_joint,
+    {this->right_wheel_vel});
+  }
 }
 
 void SwerveSystem::Update(const gz::sim::UpdateInfo &_info,
@@ -87,7 +78,8 @@ void SwerveSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
 }
 
 void SwerveSystem::hanlde_command(const gz::msgs::Twist &_msg) {
-  std::cout << "received command" << std::endl;
+    this->left_wheel_vel = _msg.linear().x();
+    this->right_wheel_vel = _msg.linear().x();
 }
 
 }  // namespace ros_gz_example_gazebo
