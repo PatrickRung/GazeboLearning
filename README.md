@@ -11,3 +11,13 @@ Like the title says this is my attempt of learning gazebo
 
 # Testing
 To send a raw command over the cli to the active node you can do `ign topic -t "/Direction" -m ignition.msgs.Twist -p "linear: {x: 0.5}, angular: {z: 0.05}"`
+
+# Testing bridge
+Run this command in another terminal (have gazebo sim running as well)
+
+`ros2 run ros_gz_bridge parameter_bridge /Direction@geometry_msgs/msg/Twist@ignition.msgs.Twist`
+
+A ros command that should be sent throuhg the bridge
+
+`ros2 topic pub /Direction geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"`
+
