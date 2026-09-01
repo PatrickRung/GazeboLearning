@@ -32,8 +32,24 @@ using namespace gz;
 using namespace sim;
 using namespace sim;
 
+enum class motor_type {
+  BackLeft,
+  BackRight,
+  FrontLeft,
+  FrontRight,
+  None
+};
+
 namespace ros_gz_example_gazebo
 {
+
+    // Wrapper
+  class DriveRequest {
+    public:
+      motor_type motor {motor_type::None};
+      gz::msgs::Twist request_state;
+  };
+
   // This is the main plugin's class. It must inherit from System and at least
   // one other interface.
   // Here we use `ISystemPostUpdate`, which is used to get results after
@@ -83,7 +99,7 @@ namespace ros_gz_example_gazebo
                 const gz::sim::EntityComponentManager &_ecm) override;
 
     private:
-      void hanlde_command(const gz::msgs::Twist &_msg);
+      void handle_command(const gz::msgs::Twist &_msg, motor_type _mt);
 
       // Object that acts as subscriber and publisher for all inter
       // ROS communication 
@@ -95,6 +111,8 @@ namespace ros_gz_example_gazebo
       double left_wheel_vel{0};
       double right_wheel_vel{0};
 
+      
+      std::vector<DriveRequest> rover_request;
   };
 }
 #endif
