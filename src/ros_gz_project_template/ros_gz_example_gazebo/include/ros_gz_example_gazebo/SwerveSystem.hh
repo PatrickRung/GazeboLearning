@@ -23,8 +23,14 @@
 #include <gz/sim/EventManager.hh>
 #include <gz/sim/System.hh>
 #include <gz/msgs/twist.pb.h>
-#include <gz/transport/Node.hh>       // For creating gazebo transport sub pub
+#include <gz/transport/Node.hh>   
+#include <gz/sim/Model.hh>        // For creating gazebo transport sub pub
+#include <gz/sim/Entity.hh>
+#include <gz/sim/components.hh>
 
+using namespace gz;
+using namespace sim;
+using namespace sim;
 
 namespace ros_gz_example_gazebo
 {
@@ -82,6 +88,11 @@ namespace ros_gz_example_gazebo
       // Object that acts as subscriber and publisher for all inter
       // ROS communication 
       gz::transport::Node node;
+      gz::sim::Entity *leftJoint{nullptr};
+      gz::sim::Entity *rightJoint{nullptr};
+
+      // Reference to the current model stored during the config state
+      gz::sim::Model model{ignition::gazebo::v6::kNullEntity};
 
 
 

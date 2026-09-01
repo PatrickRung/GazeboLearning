@@ -29,11 +29,13 @@ void SwerveSystem::Configure(const gz::sim::Entity &_entity,
                 gz::sim::EntityComponentManager &_ecm,
                 gz::sim::EventManager &_eventManager)
 {
-  std::cout << "ros_gz_example_gazebo::SwerveSystem::Configure on entity: " << _entity << std::endl;
+  std::cout << "ros_gz_example_gaebo::SwerveSystem::Configure on entity: " << _entity << std::endl;
 
   // The subscribe function requires a ref to this own object as handle_command is non static
   // and thus requires to be tied to an object
   this->node.Subscribe("/Direction", &SwerveSystem::hanlde_command, this);
+
+  this->model = gz::sim::Model(_entity);
 }
 
 void SwerveSystem::PreUpdate(const gz::sim::UpdateInfo &_info,
@@ -43,6 +45,27 @@ void SwerveSystem::PreUpdate(const gz::sim::UpdateInfo &_info,
   {
     igndbg << "ros_gz_example_gazebo::SwerveSystem::PreUpdate" << std::endl;
   }
+
+  // If joints are not populated attempt to fetch them
+  if (this->leftJoint == nullptr ||
+      this->rightJoint == nullptr)
+  {
+      gz::sim::Entity left_joint = this->model.JointByName(_ecm, "left_wheel_joint");
+      if (left_joint != ignition::gazebo::v6::kNullEntity) {
+        std::cout << "found eventually" << std::endl;
+        _ecm.SetComponentData<components::JointVelocityCmd>(left_joint,
+        {2000});
+      }
+
+      gz::sim::Entity right_joint = this->model.JointByName(_ecm, "right_wheel_joint");
+      if (right_joint != ignition::gazebo::v6::kNullEntity) {
+        std::cout << "found eventually" << std::endl;
+        _ecm.SetComponentData<components::JointVelocityCmd>(right_joint,
+        {2000});
+      }
+  }
+
+
 }
 
 void SwerveSystem::Update(const gz::sim::UpdateInfo &_info,
@@ -64,7 +87,7 @@ void SwerveSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
 }
 
 void SwerveSystem::hanlde_command(const gz::msgs::Twist &_msg) {
-  
+  std::cout << "received command" << std::endl;
 }
 
 }  // namespace ros_gz_example_gazebo
