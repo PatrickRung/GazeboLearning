@@ -32,23 +32,20 @@ using namespace gz;
 using namespace sim;
 using namespace sim;
 
-enum class motor_type {
-  BackLeft,
-  BackRight,
-  FrontLeft,
-  FrontRight,
-  None
-};
-
 namespace ros_gz_example_gazebo
 {
 
     // Wrapper
   class DriveRequest {
     public:
-      motor_type motor {motor_type::None};
+      std::string motor {""};
       gz::msgs::Twist request_state;
   };
+
+  const std::vector<std::string> DRIVE_UNITS{"back_left_steering_joint",
+                                          "back_right_steering_joint",
+                                          "front_left_steering_joint",
+                                          "front_right_steering_joint"};
 
   // This is the main plugin's class. It must inherit from System and at least
   // one other interface.
@@ -99,7 +96,7 @@ namespace ros_gz_example_gazebo
                 const gz::sim::EntityComponentManager &_ecm) override;
 
     private:
-      void handle_command(const gz::msgs::Twist &_msg, motor_type _mt);
+      void handle_command(const gz::msgs::Twist &_msg, std::string _mt);
 
       // Object that acts as subscriber and publisher for all inter
       // ROS communication 
@@ -108,9 +105,7 @@ namespace ros_gz_example_gazebo
       // Reference to the current model stored during the config state
       gz::sim::Model model{ignition::gazebo::v6::kNullEntity};
 
-      double left_wheel_vel{0};
-      double right_wheel_vel{0};
-
+      std::map<std::string, double> motor_name_to_velocity {};
       
       std::vector<DriveRequest> rover_request;
   };
