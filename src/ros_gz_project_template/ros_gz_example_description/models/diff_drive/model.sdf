@@ -608,8 +608,8 @@
          gz-sim swerve-drive plugin conventions; substitute your real plugin
          filename/typename if different). -->
     <plugin
-      filename="SwerveDrive"
-      name="ros_gz_example_gazebo::SwerveDrive">
+      filename="SwerveSystem"
+      name="ros_gz_example_gazebo::SwerveSystem">
 
       <front_left_steering_joint>front_left_steering_joint</front_left_steering_joint>
       <front_left_wheel_joint>front_left_wheel_joint</front_left_wheel_joint>
