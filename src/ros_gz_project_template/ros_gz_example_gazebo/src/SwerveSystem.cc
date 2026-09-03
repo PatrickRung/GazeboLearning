@@ -45,7 +45,10 @@ void SwerveSystem::Configure(const gz::sim::Entity &_entity,
   handle_front_left_command handle_fl_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "front_left_steering_joint");
   handle_front_right_command handle_fr_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "front_right_steering_joint");
 
-  this->node.Subscribe("/Direction", handle_bl_command);
+  this->node.Subscribe("/Direction/BackLeft", handle_bl_command);
+  this->node.Subscribe("/Direction/BackRight", handle_br_command);
+  this->node.Subscribe("/Direction/FrontLeft", handle_fl_command);
+  this->node.Subscribe("/Direction/FrontRight", handle_fr_command);
 
   this->model = gz::sim::Model(_entity);
 
