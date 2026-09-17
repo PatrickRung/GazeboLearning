@@ -1,9 +1,35 @@
 ---
+# ROS to GZ
+# Tutorial Stuff
 - ros_topic_name: "/diff_drive/cmd_vel"
   gz_topic_name: "/model/diff_drive/cmd_vel"
   ros_type_name: "geometry_msgs/msg/Twist"
   gz_type_name: "gz.msgs.Twist"
   direction: ROS_TO_GZ
+
+# Drive commands
+- ros_topic_name: "/Direction/BackLeft"
+  gz_topic_name: "/Direction/BackLeft"
+  ros_type_name: "geometry_msgs/msg/Twist"
+  gz_type_name: "gz.msgs.Twist"
+  direction: ROS_TO_GZ
+- ros_topic_name: "/Direction/BackRight"
+  gz_topic_name: "/Direction/BackRight"
+  ros_type_name: "geometry_msgs/msg/Twist"
+  gz_type_name: "gz.msgs.Twist"
+  direction: ROS_TO_GZ
+- ros_topic_name: "/Direction/FrontRight"
+  gz_topic_name: "/Direction/FrontRight"
+  ros_type_name: "geometry_msgs/msg/Twist"
+  gz_type_name: "gz.msgs.Twist"
+  direction: ROS_TO_GZ
+- ros_topic_name: "/Direction/FrontLeft"
+  gz_topic_name: "/Direction/FrontLeft"
+  ros_type_name: "geometry_msgs/msg/Twist"
+  gz_type_name: "gz.msgs.Twist"
+  direction: ROS_TO_GZ
+
+# Tutorial stuff
 - ros_topic_name: "/clock"
   gz_topic_name: "/clock"
   ros_type_name: "rosgraph_msgs/msg/Clock"

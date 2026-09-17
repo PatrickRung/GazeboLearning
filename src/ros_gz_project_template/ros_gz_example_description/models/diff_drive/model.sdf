@@ -4,7 +4,7 @@
 
     <!-- =========================== CHASSIS =========================== -->
     <link name='chassis'>
-      <pose>-0.151427 0 0.175 0 0 0</pose>
+      <pose>-0.151427 0 0.43 0 0 0</pose>
       <inertial>
         <mass>1.14395</mass>
         <inertia>

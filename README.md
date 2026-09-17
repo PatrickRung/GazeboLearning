@@ -9,6 +9,9 @@ Like the title says this is my attempt of learning gazebo
 
 4. `ros2 launch ros_gz_example_bringup diff_drive.launch.py`
 
+# Shortcut commands
+The following bash script `./run_all.sh` runs all the 
+
 # Testing
 To send a raw command over the cli to the active node you can do `ign topic -t "/Direction" -m ignition.msgs.Twist -p "linear: {x: 0.5}, angular: {z: 0.05}"`
 
@@ -19,5 +22,5 @@ Run this command in another terminal (have gazebo sim running as well). This com
 
 A ros command that should be sent throuhg the bridge
 
-`ros2 topic pub /Direction geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"`
+`ros2 topic pub /Direction/BackLeft geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 2.0, y: 0.0, z: 0.0}}"`
 

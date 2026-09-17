@@ -43,9 +43,13 @@ namespace ros_gz_example_gazebo
   };
 
   const std::vector<std::string> DRIVE_UNITS{"back_left_steering_joint",
-                                          "back_right_steering_joint",
-                                          "front_left_steering_joint",
-                                          "front_right_steering_joint"};
+                                              "back_right_steering_joint",
+                                              "front_left_steering_joint",
+                                              "front_right_steering_joint",
+                                              "back_left_wheel_joint",
+                                              "back_right_wheel_joint",
+                                              "front_left_wheel_joint",
+                                              "front_right_wheel_joint"};
 
   // This is the main plugin's class. It must inherit from System and at least
   // one other interface.
@@ -96,7 +100,7 @@ namespace ros_gz_example_gazebo
                 const gz::sim::EntityComponentManager &_ecm) override;
 
     private:
-      void handle_command(const gz::msgs::Twist &_msg, std::string _mt);
+      void handle_command(const gz::msgs::Twist &_msg, std::string _mt, std::string _rot_mt);
 
       // Object that acts as subscriber and publisher for all inter
       // ROS communication 

@@ -40,10 +40,10 @@ void SwerveSystem::Configure(const gz::sim::Entity &_entity,
   using handle_front_left_command = std::function<void(const gz::msgs::Twist &_msg)>;
   using handle_front_right_command = std::function<void(const gz::msgs::Twist &_msg)>;
 
-  handle_back_left_command handle_bl_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "back_left_steering_joint");
-  handle_back_right_command handle_br_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "back_right_steering_joint");
-  handle_front_left_command handle_fl_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "front_left_steering_joint");
-  handle_front_right_command handle_fr_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "front_right_steering_joint");
+  handle_back_left_command handle_bl_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "back_left_steering_joint", "back_left_wheel_joint");
+  handle_back_right_command handle_br_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "back_right_steering_joint", "back_right_steering_joint");
+  handle_front_left_command handle_fl_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "front_left_steering_joint", "front_left_steering_joint");
+  handle_front_right_command handle_fr_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "front_right_steering_joint", "front_right_steering_joint");
 
   this->node.Subscribe("/Direction/BackLeft", handle_bl_command);
   this->node.Subscribe("/Direction/BackRight", handle_br_command);
@@ -99,7 +99,7 @@ void SwerveSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
   }
 }
 
-void SwerveSystem::handle_command(const gz::msgs::Twist &_msg, std::string _mt) {
+void SwerveSystem::handle_command(const gz::msgs::Twist &_msg, std::string _mt, std::string _rot_mt) {
 
   std::cout << "getting here" << std::endl;
     
@@ -108,6 +108,7 @@ void SwerveSystem::handle_command(const gz::msgs::Twist &_msg, std::string _mt) 
     return;
 
   this->motor_name_to_velocity[_mt] = _msg.linear().x();
-
+  this->motor_name_to_velocity[_rot_mt] = _msg.angular().x();
+  std::cout << "test" << std::endl;
 }
 }  // namespace ros_gz_example_gazebo

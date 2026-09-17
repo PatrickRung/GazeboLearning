@@ -4,7 +4,7 @@
     <link name='link1'>
       <pose>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 1 0 -0 0</pose>
+        <pose>0 0 5 0 -0 0</pose>
         <mass>1</mass>
         <inertia>
           <ixx>0.334167</ixx>
@@ -16,7 +16,7 @@
         </inertia>
       </inertial>
       <collision name='link1_collision'>
-        <pose>0 0 1 0 -0 0</pose>
+        <pose>0 0 1.5 0 -0 0</pose>
         <geometry>
           <box>
             <size>0.1 0.1 2</size>
@@ -24,7 +24,7 @@
         </geometry>
       </collision>
       <visual name='link1_visual'>
-        <pose>0 0 1 0 -0 0</pose>
+        <pose>0 0 5 0 -0 0</pose>
         <geometry>
           <box>
             <size>0.1 0.1 2</size>
@@ -38,7 +38,7 @@
       </visual>
     </link>
     <joint name='joint1' type='revolute'>
-      <pose relative_to='link1'>0 0.1 1.95 0 -0 0</pose>
+      <pose relative_to='link1'>0 0.1 2.45 0 -0 0</pose>
       <parent>link1</parent>
       <child>link2</child>
       <axis>
@@ -91,8 +91,8 @@
         </material>
       </visual>
     </link>
-    <joint name='joint2' type='revolute'>
-      <pose relative_to='link2'>0 0.1 0.9 0 -0 0</pose>
+    <joint name='joint1' type='revolute'>
+      <pose relative_to='link1'>0 0.1 2.2 0 -0 0</pose>
       <parent>link2</parent>
       <child>link3</child>
       <axis>
