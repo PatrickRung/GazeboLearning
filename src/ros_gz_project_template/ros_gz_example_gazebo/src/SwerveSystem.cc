@@ -40,10 +40,10 @@ void SwerveSystem::Configure(const gz::sim::Entity &_entity,
   using handle_front_left_command = std::function<void(const gz::msgs::Twist &_msg)>;
   using handle_front_right_command = std::function<void(const gz::msgs::Twist &_msg)>;
 
-  handle_back_left_command handle_bl_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "back_left_steering_joint", "back_left_wheel_joint");
-  handle_back_right_command handle_br_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "back_right_steering_joint", "back_right_steering_joint");
-  handle_front_left_command handle_fl_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "front_left_steering_joint", "front_left_steering_joint");
-  handle_front_right_command handle_fr_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "front_right_steering_joint", "front_right_steering_joint");
+  handle_back_left_command handle_bl_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "back_left_wheel_joint", "back_left_steering_joint");
+  handle_back_right_command handle_br_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "back_right_wheel_joint", "back_right_steering_joint");
+  handle_front_left_command handle_fl_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "front_left_wheel_joint", "front_left_steering_joint");
+  handle_front_right_command handle_fr_command = std::bind(&SwerveSystem::handle_command, this, std::placeholders::_1, "front_right_wheel_joint", "front_right_steering_joint");
 
   this->node.Subscribe("/Direction/BackLeft", handle_bl_command);
   this->node.Subscribe("/Direction/BackRight", handle_br_command);
@@ -75,8 +75,39 @@ void SwerveSystem::PreUpdate(const gz::sim::UpdateInfo &_info,
 
     if (drive_unit_e != ignition::gazebo::v6::kNullEntity 
         && drive_value != this->motor_name_to_velocity.end()) {
-      _ecm.SetComponentData<components::JointVelocityCmd>(drive_unit_e,
-      {drive_value->second});
+
+      // If of type steering, perform control loop logic to set direction
+      if (STEERING_UNITS.find(drive_unit) != STEERING_UNITS.end()) {
+        ignition::gazebo::v6::components::JointPosition *curr_joint_pos = 
+          _ecm.Component<components::JointPosition>(drive_unit_e);
+
+        if (curr_joint_pos && !curr_joint_pos->Data().empty()) {
+          double encoder_val = curr_joint_pos->Data()[0];
+          double target_angle = drive_value->second;
+
+          std::cout << "Current angle " << encoder_val << std::endl;
+          std::cout << "Desired angle " << target_angle << std::endl;
+
+          // Normalize diff to get optimal direction to travel
+          double angular_dir = std::fmod(std::fmod(encoder_val, 2 * M_PI) + 2 * M_PI, 2 * M_PI);
+          angular_dir = target_angle - angular_dir;
+
+          double desired_vel = PID_P * angular_dir;
+          desired_vel = desired_vel;
+
+          std::cout << "applying vel " << desired_vel << std::endl;
+
+          _ecm.SetComponentData<components::JointVelocityCmd>(drive_unit_e,
+          {desired_vel});
+        }
+        else {
+          _ecm.CreateComponent(drive_unit_e, components::JointPosition());
+        }
+      }
+      else {
+        _ecm.SetComponentData<components::JointVelocityCmd>(drive_unit_e,
+        {drive_value->second});
+      }
     }
   }
 }
@@ -109,6 +140,5 @@ void SwerveSystem::handle_command(const gz::msgs::Twist &_msg, std::string _mt, 
 
   this->motor_name_to_velocity[_mt] = _msg.linear().x();
   this->motor_name_to_velocity[_rot_mt] = _msg.angular().x();
-  std::cout << "test" << std::endl;
 }
 }  // namespace ros_gz_example_gazebo

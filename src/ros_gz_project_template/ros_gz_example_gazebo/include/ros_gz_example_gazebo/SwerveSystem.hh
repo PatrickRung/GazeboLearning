@@ -51,6 +51,14 @@ namespace ros_gz_example_gazebo
                                               "front_left_wheel_joint",
                                               "front_right_wheel_joint"};
 
+  const std::set<std::string> STEERING_UNITS{"back_left_steering_joint"};
+
+  // PID constants
+  const double SUCCESS_THRESH = 0.1;
+  const double PID_P = 1.0;
+  const double PID_I = 0.1;
+  const double PID_D = 0.1;
+
   // This is the main plugin's class. It must inherit from System and at least
   // one other interface.
   // Here we use `ISystemPostUpdate`, which is used to get results after
