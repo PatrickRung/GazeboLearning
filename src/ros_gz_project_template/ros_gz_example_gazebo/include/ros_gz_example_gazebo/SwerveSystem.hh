@@ -55,7 +55,8 @@ namespace ros_gz_example_gazebo
 
   // PID constants
   const double SUCCESS_THRESH = 0.1;
-  const double PID_P = 1.0;
+  const double CONTROL_LOOP_SPEED = 1000; // Speed in hz
+  const double PID_P = 20.0;
   const double PID_I = 0.1;
   const double PID_D = 0.1;
 
@@ -110,6 +111,8 @@ namespace ros_gz_example_gazebo
     private:
       void handle_command(const gz::msgs::Twist &_msg, std::string _mt, std::string _rot_mt);
 
+      void update_motor_state(gz::sim::EntityComponentManager &_ecm);
+
       // Object that acts as subscriber and publisher for all inter
       // ROS communication 
       gz::transport::Node node;
@@ -118,8 +121,12 @@ namespace ros_gz_example_gazebo
       gz::sim::Model model{ignition::gazebo::v6::kNullEntity};
 
       std::map<std::string, double> motor_name_to_velocity {};
+
+      std::map<std::string, double> motor_name_to_rot {};
       
       std::vector<DriveRequest> rover_request;
+
+      double divider_accum;
   };
 }
 #endif

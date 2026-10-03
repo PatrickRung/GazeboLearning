@@ -56,6 +56,10 @@ void SwerveSystem::Configure(const gz::sim::Entity &_entity,
   for (std::string drive_name : DRIVE_UNITS) {
     this->motor_name_to_velocity[drive_name] = 0;
   }
+
+  for (std::string drive_name : STEERING_UNITS) {
+    this->motor_name_to_rot[drive_name] = 0;
+  }
 }
 
 void SwerveSystem::PreUpdate(const gz::sim::UpdateInfo &_info,
@@ -66,47 +70,65 @@ void SwerveSystem::PreUpdate(const gz::sim::UpdateInfo &_info,
     igndbg << "ros_gz_example_gazebo::SwerveSystem::PreUpdate" << std::endl;
   }
 
+  // Motor control refresh
+    if (divider_accum >= 1 / CONTROL_LOOP_SPEED) {
+      divider_accum = 0;
+    this->update_motor_state(_ecm);
+  }
+  else {
+    divider_accum += std::chrono::duration<double>(_info.dt).count();
+  }
+
+  // Update velocity
   for (std::string drive_unit : DRIVE_UNITS) {
+
+    gz::sim::Entity drive_unit_e = this->model.JointByName(_ecm, drive_unit);
+
+
+    if (drive_unit_e != ignition::gazebo::v6::kNullEntity) {
+
+      auto drive_value = this->motor_name_to_velocity.find(drive_unit);
+
+      _ecm.SetComponentData<components::JointForceCmd>(drive_unit_e,
+      {drive_value->second});
+    }
+  }
+}
+
+// TODO: To implement better motor control
+void SwerveSystem::update_motor_state(gz::sim::EntityComponentManager &_ecm) {
+  for (std::string drive_unit : STEERING_UNITS) {
 
     // Get sim object for drive unit
     gz::sim::Entity drive_unit_e = this->model.JointByName(_ecm, drive_unit);
 
-    auto drive_value = this->motor_name_to_velocity.find(drive_unit);
+    auto desired_rot = this->motor_name_to_rot.find(drive_unit);
 
     if (drive_unit_e != ignition::gazebo::v6::kNullEntity 
-        && drive_value != this->motor_name_to_velocity.end()) {
+        && desired_rot != this->motor_name_to_velocity.end()) {
 
       // If of type steering, perform control loop logic to set direction
-      if (STEERING_UNITS.find(drive_unit) != STEERING_UNITS.end()) {
-        ignition::gazebo::v6::components::JointPosition *curr_joint_pos = 
-          _ecm.Component<components::JointPosition>(drive_unit_e);
+      ignition::gazebo::v6::components::JointPosition *curr_joint_pos = 
+        _ecm.Component<components::JointPosition>(drive_unit_e);
 
-        if (curr_joint_pos && !curr_joint_pos->Data().empty()) {
-          double encoder_val = curr_joint_pos->Data()[0];
-          double target_angle = drive_value->second;
+      if (curr_joint_pos && !curr_joint_pos->Data().empty()) {
+        double encoder_val = curr_joint_pos->Data()[0];
+        double target_angle = desired_rot->second;
 
-          std::cout << "Current angle " << encoder_val << std::endl;
-          std::cout << "Desired angle " << target_angle << std::endl;
+        // std::cout << "Current angle " << encoder_val << std::endl;
+        // std::cout << "Desired angle " << target_angle << std::endl;
 
-          // Normalize diff to get optimal direction to travel
-          double angular_dir = std::fmod(std::fmod(encoder_val, 2 * M_PI) + 2 * M_PI, 2 * M_PI);
-          angular_dir = target_angle - angular_dir;
+        // Normalize diff to get optimal direction to travel
+        double angular_dir = std::fmod(std::fmod(encoder_val, 2 * M_PI) + 2 * M_PI, 2 * M_PI);
+        angular_dir = target_angle - angular_dir;
 
-          double desired_vel = PID_P * angular_dir;
-          desired_vel = desired_vel;
+        double desired_vel = PID_P * angular_dir;
+        desired_vel = desired_vel;
 
-          std::cout << "applying vel " << desired_vel << std::endl;
-
-          _ecm.SetComponentData<components::JointVelocityCmd>(drive_unit_e,
-          {desired_vel});
-        }
-        else {
-          _ecm.CreateComponent(drive_unit_e, components::JointPosition());
-        }
+        this->motor_name_to_velocity[drive_unit] = desired_vel;
       }
       else {
-        _ecm.SetComponentData<components::JointVelocityCmd>(drive_unit_e,
-        {drive_value->second});
+        _ecm.CreateComponent(drive_unit_e, components::JointPosition());
       }
     }
   }
@@ -139,6 +161,6 @@ void SwerveSystem::handle_command(const gz::msgs::Twist &_msg, std::string _mt, 
     return;
 
   this->motor_name_to_velocity[_mt] = _msg.linear().x();
-  this->motor_name_to_velocity[_rot_mt] = _msg.angular().x();
+  this->motor_name_to_rot[_rot_mt] = _msg.angular().x();
 }
 }  // namespace ros_gz_example_gazebo
